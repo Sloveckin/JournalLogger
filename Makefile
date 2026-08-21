@@ -19,6 +19,12 @@ endif
 INCLUDE+=\
 	-Ilogger/include\
 
+LDPATH+=\
+	-Llogger\
+
+LIBS+=\
+	-llogger\
+
 SOURCE+=\
 	main.cpp
 
@@ -27,7 +33,7 @@ OBJECTS := $(SOURCE:.cpp=.o)
 all: $(BINARY)
 
 $(BINARY): $(OBJECTS)
-	g++ $(CFLAGS) -o $@ $^
+	g++ $(CFLAGS) -o $@ $^ $(LDPATH) $(LIBS)
 
 %.o:%.cpp
 	g++ $(CFLAGS) $(INCLUDE) -c $< -o $@

@@ -21,11 +21,15 @@ namespace logger {
         }
 
         try {
-
+            this->file_ << "some string\n";
         } catch (const std::ios_base::failure& e) {
             throw exception::logger::LoggerWriteException(e.what());
         }
 
+    }
+
+    Logger::~Logger() noexcept {
+        this->file_.close();
     }
 
 }

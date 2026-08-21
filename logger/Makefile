@@ -21,8 +21,11 @@ INCLUDE+=\
 	-Iinclude\
 
 SOURCE+=\
-	src/data/Note.cpp
-	src/data/excpetion/LoggerFileNotFound.cpp
+	src/Logger.cpp\
+	src/data/Note.cpp\
+	src/exception/logger/LoggerException.cpp\
+	src/exception/logger/LoggerFileNotFound.cpp\
+	src/exception/logger/LoggerWriteException.cpp\
 
 OBJECTS := $(SOURCE:.cpp=.o)
 
