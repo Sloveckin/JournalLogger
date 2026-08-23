@@ -1,6 +1,8 @@
 #ifndef LOGGER_DATA_IMPORTANCE_H
 #define LOGGER_DATA_IMPORTANCE_H
 
+#include <string>
+
 namespace logger {
     namespace data {
         enum Importance {
@@ -8,6 +10,8 @@ namespace logger {
             MEDIUM = 1,
             HIGH = 2
         };
+
+        std::string importance_to_string(const Importance importance) noexcept;
     }
 }
 

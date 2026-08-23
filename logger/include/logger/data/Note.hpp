@@ -1,6 +1,7 @@
 #ifndef LOGGER_DATA_NOTE_H
 #define LOGGER_DATA_NOTE_H
 
+#include <ctime>
 #include <string>
 #include <chrono>
 
@@ -15,6 +16,7 @@ namespace logger {
 
             using Message = std::string;
             using Time = std::chrono::time_point<std::chrono::system_clock>;
+            //using Time = time_t;
 
             Note() = delete;
             

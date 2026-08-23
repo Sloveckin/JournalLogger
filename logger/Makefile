@@ -2,14 +2,12 @@ LIBRARY=liblogger.so
 
 BUILD=debug
 
+STANDART=17
+
 ifeq ($(BUILD),debug)
 	CFLAGS+= \
 		-g \
-		-fsanitize=address \
-		-fsanitize=pointer-compare \
-		-fsanitize=pointer-subtract \
-		-fsanitize=undefined \
-		-fsanitize-address-use-after-scope
+		-fsanitize=thread
 endif
 
 ifeq ($(BUILD),release)
@@ -23,6 +21,7 @@ INCLUDE+=\
 SOURCE+=\
 	src/Logger.cpp\
 	src/data/Note.cpp\
+	src/data/Importance.cpp\
 	src/exception/logger/LoggerException.cpp\
 	src/exception/logger/LoggerFileNotFound.cpp\
 	src/exception/logger/LoggerWriteException.cpp\
@@ -35,7 +34,7 @@ $(LIBRARY): $(OBJECTS)
 	g++ --shared $(CFLAGS) $^ -o $@
 
 %.o: %.cpp
-	g++ -c $(CFLAGS) $(INCLUDE) -fPIC $< -o $@
+	g++ -c --std=c++$(STANDART) $(CFLAGS) $(INCLUDE) -fPIC $< -o $@
 
 clean:
 	rm -rf $(LIBRARY) $(OBJECTS)

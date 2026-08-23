@@ -23,7 +23,9 @@ namespace logger {
         Logger& operator=(const Logger& other) = delete;
         Logger& operator=(Logger&& other) =  delete;
 
-        void write(const data::Note& note) const;
+        void log(const data::Note& note) const;
+
+        void set_importance(const data::Importance importance) noexcept;
 
         ~Logger() noexcept;
 
