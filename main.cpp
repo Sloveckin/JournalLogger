@@ -45,12 +45,39 @@ static void write(const logger::Logger& logger, std::queue<logger::data::Note>& 
     }
 }
 
-static void read(std::queue<logger::data::Note>& queue, std::mutex& mtx, std::condition_variable& condition, bool& stop) {
+static logger::data::Importance read_importance(const std::string& importance_str) {
+
+    try {
+        return convert_str_to_importance(importance_str);
+    } catch (const std::invalid_argument& e1) {
+        while (true) {
+            try {
+                std::string input;
+                std::cin >> input;
+                return convert_str_to_importance(importance_str);
+            } catch (const std::invalid_argument& e2) {
+                std::cout << "Invalid importance value\nRepeat again\n";
+            }
+        }
+    }
+}
+
+static void read(std::queue<logger::data::Note>& queue, std::mutex& mtx, std::condition_variable& condition, bool& stop, const logger::data::Importance deafult_importance) {
     while (true) {
-        std::string message;
+        std::string input;
+        std::cout << "Write message\n";
+        if (!std::getline(std::cin, input)) {
+            {
+                std::unique_lock<std::mutex> lock(mtx);
+                stop = true;
+            }
+            condition.notify_one();
+            return;
+        }
+
+        std::cout << "Write importance\n";
         std::string importance_str;
-
-        if (!(std::cin >> message)) {
+        if (!std::getline(std::cin, importance_str)) {
             {
                 std::unique_lock<std::mutex> lock(mtx);
                 stop = true;
@@ -59,33 +86,23 @@ static void read(std::queue<logger::data::Note>& queue, std::mutex& mtx, std::co
             return;
         }
 
-        if (message == "q") {
-            {
-                std::unique_lock<std::mutex> lock(mtx);
-                stop = true;
-            }
-            condition.notify_one();
-            return;
+        logger::data::Importance importance;
+        if (importance_str.empty()) {
+            importance = deafult_importance;
+        } else {
+            importance = read_importance(importance_str);
         }
 
-        std::cin >> importance_str;
+        const auto time = std::chrono::system_clock::now();
 
-        try {
-            const logger::data::Importance importance = convert_str_to_importance(importance_str);
-            const auto time = std::chrono::system_clock::now();
+        logger::data::Note note(input, importance, time);
 
-            const logger::data::Note note(message, importance, time);
-
-            {
-                std::unique_lock<std::mutex> lock(mtx);
-                queue.push(note);
-            }
-
-            condition.notify_one();
-        } catch (std::invalid_argument& e) {
-            std::cout << e.what() << '\n';
-            std::cout << "repeat input\n";
+        {
+            std::unique_lock<std::mutex> lock(mtx);
+            queue.push(note);
         }
+
+        condition.notify_one();
     }
 }
 
@@ -98,9 +115,9 @@ int main(int argc, char** argv) {
 
     try {
         const std::string path_to_file = argv[1];
-        const logger::data::Importance importance = convert_str_to_importance(argv[2]);
+        const logger::data::Importance default_importance = convert_str_to_importance(argv[2]);
 
-        const logger::Logger logger(path_to_file, importance);
+        const logger::Logger logger(path_to_file, default_importance);
 
         std::condition_variable condition;
         std::mutex mtx;
@@ -109,7 +126,7 @@ int main(int argc, char** argv) {
         std::queue<logger::data::Note> queue;
 
         std::thread worker(write, std::ref(logger), std::ref(queue), std::ref(mtx), std::ref(condition), std::ref(stop));
-        std::thread reader(read, std::ref(queue), std::ref(mtx), std::ref(condition), std::ref(stop));
+        std::thread reader(read, std::ref(queue), std::ref(mtx), std::ref(condition), std::ref(stop), default_importance);
 
         worker.join();
         reader.join();
