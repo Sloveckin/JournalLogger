@@ -9,24 +9,30 @@ namespace logger {
 namespace exception {
 
 namespace logger {
-
+/**
+ * @brief Basic class for logger exception
+ * 
+ */
 class LoggerException : public std::exception {
 public:
   LoggerException() = delete;
 
+  /**
+   * @brief Construct a new LoggerException with error message
+   * 
+   * @param message 
+   */
   LoggerException(const std::string& message);
 
-  LoggerException(const LoggerException& other) = default;
-  LoggerException(LoggerException&& other) = default;
-
-  LoggerException& operator=(const LoggerException& other) = default;
-  LoggerException& operator=(LoggerException&& other) = default;
-
+  /**
+   * @brief Default method for exception
+   * 
+   * @return const char* 
+   */
   const char* what() const noexcept override;
 
-  ~LoggerException() noexcept = default;
-
 private:
+  /// Exception message
   std::string message_;
 };
 } // namespace logger

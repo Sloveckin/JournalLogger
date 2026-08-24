@@ -11,19 +11,20 @@ namespace exception {
 
 namespace logger {
 
+/**
+ * @brief Class for exception when file not found
+ * 
+ */
 class LoggerFileNotFound : public LoggerException {
 public:
   LoggerFileNotFound() = delete;
 
+  /**
+   * @brief Construct a new Logger File Not Found object 
+   * 
+   * @param path Path to file which wasn't found
+   */
   LoggerFileNotFound(const std::string& path);
-
-  LoggerFileNotFound(const LoggerFileNotFound& other) = default;
-  LoggerFileNotFound(LoggerFileNotFound&& other) = default;
-
-  LoggerFileNotFound& operator=(const LoggerFileNotFound& other) = default;
-  LoggerFileNotFound& operator=(LoggerFileNotFound&& other) = default;
-
-  ~LoggerFileNotFound() noexcept = default;
 };
 
 } // namespace logger

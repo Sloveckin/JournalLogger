@@ -11,19 +11,18 @@ namespace exception {
 
 namespace logger {
 
+/**
+ * @brief Exception for situation when writing in file throw exceptoin
+ * 
+ */
 class LoggerWriteException : public LoggerException {
 public:
-  LoggerWriteException() = delete;
-
+  /**
+   * @brief Construct a new Logger Write Exception object with message
+   * 
+   * @param message Message
+   */
   LoggerWriteException(const std::string& message);
-
-  LoggerWriteException(const LoggerWriteException& other) = default;
-  LoggerWriteException(LoggerWriteException&& other) = default;
-
-  LoggerWriteException& operator=(const LoggerWriteException& other) = default;
-  LoggerWriteException& operator=(LoggerWriteException&& other) = default;
-
-  ~LoggerWriteException() noexcept = default;
 };
 
 } // namespace logger

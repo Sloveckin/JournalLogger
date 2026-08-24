@@ -12,6 +12,12 @@
 #include <stdexcept>
 #include <thread>
 
+/**
+ * @brief Convert string into importance
+ * 
+ * @param[in] str Source
+ * @return logger::data::Importance 
+ */
 static logger::data::Importance convert_str_to_importance(const std::string& str) {
   if (str == "low") {
     return logger::data::Importance::LOW;
@@ -24,6 +30,15 @@ static logger::data::Importance convert_str_to_importance(const std::string& str
   throw std::invalid_argument("incorrent importance");
 }
 
+/**
+ * @brief function that will be called in thread which writes logs
+ * 
+ * @param[in] logger Logger
+ * @param[in] queue Queue with notes
+ * @param[in] mtx Mutex for thread-safe operations
+ * @param[in] condition Condition variable for awaking thread
+ * @param[in] stop Stop flag
+ */
 static void write(
     const logger::Logger& logger,
     std::queue<logger::data::Note>& queue,
@@ -32,10 +47,13 @@ static void write(
     bool& stop
 ) {
   while (true) {
+    /// Get lock for writing
     std::unique_lock<std::mutex> lock(mtx);
 
+    /// Wait until note appears in queue or stop flag will be changed
     condition.wait(lock, [&] { return !queue.empty() || stop; });
 
+    /// Stop only when on notes will be logged and stop flag is changed
     if (stop && queue.empty()) {
       return;
     }
@@ -51,10 +69,18 @@ static void write(
   }
 }
 
+/**
+ * @brief read importance until it will be correct 
+ * 
+ * @param importance_str 
+ * @return logger::data::Importance 
+ */
 static logger::data::Importance read_importance(const std::string& importance_str) {
   try {
+    /// Try to convert first user input
     return convert_str_to_importance(importance_str);
   } catch (const std::invalid_argument& e1) {
+    /// Repeat until input will be correct
     while (true) {
       try {
         std::string input;
@@ -67,6 +93,15 @@ static logger::data::Importance read_importance(const std::string& importance_st
   }
 }
 
+/**
+ * @brief function that will be called in thread which reads user input
+ * 
+ * @param[in] queue Queue with notes
+ * @param[in] mtx Mutex for thread-safe operations
+ * @param[in] condition Condition variable for awaking thread
+ * @param[in] stop Stop flag
+ * @param[in] deafult_importance Default importance which is chosen by user
+ */
 static void read(
     std::queue<logger::data::Note>& queue,
     std::mutex& mtx,
@@ -97,6 +132,7 @@ static void read(
       return;
     }
 
+    /// If user skip importance it will be default
     logger::data::Importance importance;
     if (importance_str.empty()) {
       importance = deafult_importance;
@@ -118,6 +154,7 @@ static void read(
 }
 
 int main(int argc, char** argv) {
+  /// Check application input
   if (argc != 3) {
     std::cout << "Invalid input. Expected <path-to-log-file> <default-importance>\n";
     return -1;
@@ -135,9 +172,11 @@ int main(int argc, char** argv) {
 
     std::queue<logger::data::Note> queue;
 
+    /// Start threads
     std::thread worker(write, std::ref(logger), std::ref(queue), std::ref(mtx), std::ref(condition), std::ref(stop));
     std::thread reader(read, std::ref(queue), std::ref(mtx), std::ref(condition), std::ref(stop), default_importance);
-
+  
+    /// Wait until threads will be stopped
     worker.join();
     reader.join();
 
