@@ -1,49 +1,47 @@
 #ifndef LOGGER_DATA_NOTE_H
 #define LOGGER_DATA_NOTE_H
 
-#include <ctime>
-#include <string>
-#include <chrono>
-
 #include "Importance.hpp"
 
+#include <chrono>
+#include <ctime>
+#include <string>
 
 namespace logger {
-    namespace data {
+namespace data {
 
-        class Note {
-        public:
+class Note {
+public:
+  using Message = std::string;
+  using Time = std::chrono::time_point<std::chrono::system_clock>;
 
-            using Message = std::string;
-            using Time = std::chrono::time_point<std::chrono::system_clock>;
-            //using Time = time_t;
+  Note() = delete;
 
-            Note() = delete;
-            
-            Note(const Message& message, const Importance importance, const Time& time);
+  Note(const Message& message, const Importance importance, const Time& time);
 
-            Note(const Note& other) = default;
-            Note(Note&& other) = default;
+  Note(const Note& other) = default;
+  Note(Note&& other) = default;
 
-            Note& operator=(const Note& other) = default;
-            Note& operator=(Note&& other) = default;
+  Note& operator=(const Note& other) = default;
+  Note& operator=(Note&& other) = default;
 
-            Message& message() noexcept;
-            const Message& message() const noexcept;
+  Message& message() noexcept;
+  const Message& message() const noexcept;
 
-            Importance importance() const noexcept;
+  Importance importance() const noexcept;
 
-            Time& time() noexcept;
-            const Time& time() const noexcept;
-            
-            ~Note() noexcept = default;
-        private:
-            Message message_;
-            Importance importance_;
-            Time time_;
-        };
+  Time& time() noexcept;
+  const Time& time() const noexcept;
 
-    }
-}
+  ~Note() noexcept = default;
+
+private:
+  Message message_;
+  Importance importance_;
+  Time time_;
+};
+
+} // namespace data
+} // namespace logger
 
 #endif

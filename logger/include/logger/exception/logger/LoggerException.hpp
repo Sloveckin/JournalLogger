@@ -5,28 +5,34 @@
 #include <string>
 
 namespace logger {
-    namespace exception {
-        namespace logger {
-            class LoggerException : public std::exception {
-            public:
-                LoggerException() = delete;
 
-                LoggerException(const std::string& message);
-                
-                LoggerException(const LoggerException& other) = default;
-                LoggerException(LoggerException&& other) = default;
+namespace exception {
 
-                LoggerException& operator=(const LoggerException& other) = default;
-                LoggerException& operator=(LoggerException&& other) = default;
+namespace logger {
 
-                const char* what() const noexcept override;
+class LoggerException : public std::exception {
+public:
+  LoggerException() = delete;
 
-                ~LoggerException() noexcept = default;
-            private:
-                std::string message_;
-            };
-        }
-    }
-}
+  LoggerException(const std::string& message);
+
+  LoggerException(const LoggerException& other) = default;
+  LoggerException(LoggerException&& other) = default;
+
+  LoggerException& operator=(const LoggerException& other) = default;
+  LoggerException& operator=(LoggerException&& other) = default;
+
+  const char* what() const noexcept override;
+
+  ~LoggerException() noexcept = default;
+
+private:
+  std::string message_;
+};
+} // namespace logger
+
+} // namespace exception
+
+} // namespace logger
 
 #endif
