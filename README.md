@@ -35,7 +35,7 @@ make
 
 export LD_LIBRARY_PATH=./logger:$LD_LIBRARY_PATH # установка зависимостей для библиотеки logger
 
-./JournalWriter <path-to-file> <low|medium|high>
+./JournalLogger <path-to-file> <low|medium|high>
 ```
 ### Генерация документации:
 ```bash

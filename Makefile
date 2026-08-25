@@ -1,4 +1,4 @@
-BINARY=JournalWriter
+BINARY=JournalLogger
 BUILD=debug
 
 STANDART=17
