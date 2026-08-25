@@ -1,4 +1,4 @@
-# JournalWriter
+# JournalLogger
 
 ### Установка зависимостей:
 ```bash
